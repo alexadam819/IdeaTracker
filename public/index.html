@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IdeaTracker</title>
+  <script>
+    // Apply the saved theme before first paint to avoid a flash.
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#board">Skip to board</a>
+
+  <header class="app-header">
+    <h1 class="logo">💡 IdeaTracker</h1>
+
+    <div class="toolbar" role="search">
+      <label class="visually-hidden" for="search">Search ideas</label>
+      <input id="search" type="search" placeholder="Search title, description, tags…" autocomplete="off">
+
+      <label class="visually-hidden" for="filter-tag">Filter by tag</label>
+      <select id="filter-tag">
+        <option value="">All tags</option>
+      </select>
+
+      <label class="visually-hidden" for="filter-priority">Filter by priority</label>
+      <select id="filter-priority">
+        <option value="">All priorities</option>
+        <option value="high">High</option>
+        <option value="medium">Medium</option>
+        <option value="low">Low</option>
+      </select>
+    </div>
+
+    <div class="header-actions">
+      <button id="theme-toggle" class="btn btn-ghost" type="button" aria-pressed="false">
+        <span aria-hidden="true" class="theme-icon">🌙</span>
+        <span class="theme-label">Dark mode</span>
+      </button>
+      <button id="new-idea" class="btn btn-primary" type="button">+ New idea</button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" role="status" hidden></div>
+
+  <main id="board" class="board" aria-label="Idea board" tabindex="-1">
+    <p class="loading">Loading…</p>
+  </main>
+
+  <!-- Create / edit modal -->
+  <dialog id="edit-dialog" class="modal" aria-labelledby="edit-title">
+    <form id="edit-form" method="dialog" novalidate>
+      <header class="modal-header">
+        <h2 id="edit-title">New idea</h2>
+        <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">✕</button>
+      </header>
+
+      <div class="modal-body form-grid">
+        <label for="f-title">Title <span aria-hidden="true">*</span></label>
+        <input id="f-title" name="title" required maxlength="200" autocomplete="off">
+
+        <label for="f-description">Description</label>
+        <textarea id="f-description" name="description" rows="4" maxlength="5000"
+          placeholder="What problem does it solve? How does it work?"></textarea>
+
+        <label for="f-audience">Target audience</label>
+        <input id="f-audience" name="targetAudience" maxlength="500" placeholder="e.g. freelance designers">
+
+        <label for="f-tags">Tags</label>
+        <input id="f-tags" name="tags" placeholder="Comma separated, e.g. b2b, ai, productivity"
+          aria-describedby="f-tags-hint">
+        <small id="f-tags-hint" class="hint">Separate tags with commas.</small>
+
+        <label for="f-priority">Priority</label>
+        <select id="f-priority" name="priority">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" name="notes" rows="3" maxlength="10000"></textarea>
+
+        <p id="edit-error" class="form-error" role="alert" hidden></p>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Card detail modal -->
+  <dialog id="detail-dialog" class="modal modal-wide" aria-labelledby="detail-title">
+    <header class="modal-header">
+      <h2 id="detail-title"></h2>
+      <button type="button" class="btn btn-ghost btn-icon" data-close aria-label="Close">✕</button>
+    </header>
+    <div id="detail-body" class="modal-body"></div>
+  </dialog>
+</body>
+</html>
