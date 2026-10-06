@@ -10,13 +10,13 @@ All data lives in one local JSON file. There is no external database and no auth
 
 - **Backend:** Node.js (LTS, 20+) with Express. Use ES modules (`"type": "module"`).
 - **Frontend:** Plain HTML, CSS, and vanilla JavaScript, served statically by Express. **No build step**, no frameworks, no bundlers.
-- **LLM:** Google Gemini via the official `@google/genai` SDK, with Google Search grounding turned on for research calls.
+- **LLM:** Google Gemini via `@google/genai` (with Google Search grounding) or Anthropic Claude via `@anthropic-ai/sdk`. Auto-detected based on which API key is configured in `.env`.
 - **Database:** A local JSON file at `data/db.json`.
 - **Config:** Environment variables loaded from `.env` with Node's built-in `--env-file` flag (no `dotenv`).
 
 ### Dependencies
 
-Keep dependencies minimal. The approved runtime dependencies are `express` and `@google/genai`. **Ask the user before adding any other dependency** (runtime or dev). Prefer built-in Node and browser APIs. For example, use the native HTML5 Drag and Drop API instead of a drag-and-drop library.
+Keep dependencies minimal. The approved runtime dependencies are `express`, `@google/genai`, and `@anthropic-ai/sdk`. **Ask the user before adding any other dependency** (runtime or dev). Prefer built-in Node and browser APIs. For example, use the native HTML5 Drag and Drop API instead of a drag-and-drop library.
 
 ## Suggested project layout
 

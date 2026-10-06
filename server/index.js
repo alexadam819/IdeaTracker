@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import * as db from './db.js';
 import { publicStages } from './stages.js';
 import { router as ideasRouter, PRIORITIES } from './routes/ideas.js';
-import { MODEL, isConfigured } from './research.js';
+import { getActiveModel, isConfigured } from './research.js';
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public');
 const PORT = Number(process.env.PORT) || 3000;
@@ -45,8 +45,9 @@ await db.init();
 app.listen(PORT, () => {
   console.log(`IdeaTracker running at http://localhost:${PORT}`);
   if (isConfigured()) {
-    console.log(`Research model: ${MODEL}`);
+    const info = getActiveModel();
+    console.log(`Research provider: ${info.provider} (${info.model})`);
   } else {
-    console.warn('GEMINI_API_KEY is not set. The board works, but research is disabled.');
+    console.warn('Neither GEMINI_API_KEY nor ANTHROPIC_API_KEY is set. Research is disabled.');
   }
 });

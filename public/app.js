@@ -184,7 +184,7 @@ function researchButton(idea, { compact = false } = {}) {
     type: 'button',
     class: `btn ${compact ? 'btn-small' : ''} ${running ? 'is-running' : 'btn-primary'}`,
     disabled: running || !state.researchEnabled,
-    title: state.researchEnabled ? `${label}: ${stage.title}` : 'Set GEMINI_API_KEY in .env to enable research',
+    title: state.researchEnabled ? `${label}: ${stage.title}` : 'Set an API key (GEMINI_API_KEY or ANTHROPIC_API_KEY) in .env to enable research',
     'aria-label': `${label} for ${stage.title} on “${idea.title}”`,
     onclick: (event) => {
       event.stopPropagation();
@@ -282,7 +282,7 @@ function renderDetail() {
     const content = [];
     if (status === 'running') {
       content.push(el('p', { class: 'running-note', role: 'status' },
-        el('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Researching with Google Search… this can take a minute.'));
+        el('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Running AI research… this can take a moment.'));
     }
     if (status === 'failed' && result?.error) {
       content.push(el('p', { class: 'form-error' }, `Research failed: ${result.error}`));
@@ -564,7 +564,7 @@ async function init() {
     state.ideas = ideas;
     if (!config.researchEnabled) {
       const banner = $('#banner');
-      banner.textContent = 'Research is disabled: set GEMINI_API_KEY in your .env file and restart the server.';
+      banner.textContent = 'Research is disabled: set GEMINI_API_KEY or ANTHROPIC_API_KEY in your .env file and restart the server.';
       banner.hidden = false;
     }
     render();

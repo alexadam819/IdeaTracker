@@ -180,7 +180,7 @@ router.delete('/:id', async (req, res) => {
 // (stage status "running"); the Gemini call continues in the background and saves its result.
 router.post('/:id/research', async (req, res) => {
   if (!isConfigured()) {
-    throw new HttpError(503, 'GEMINI_API_KEY is not set. Add it to your .env file and restart the server.');
+    throw new HttpError(503, 'No LLM API key configured. Add GEMINI_API_KEY or ANTHROPIC_API_KEY to your .env file and restart the server.');
   }
 
   const { idea, stageId, prompt } = await db.update((data) => {
