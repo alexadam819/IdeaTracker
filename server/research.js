@@ -5,7 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 import Anthropic from '@anthropic-ai/sdk';
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-flash-latest';
-export const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-7-sonnet-latest';
+export const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-20241022';
 
 let geminiClient = null;
 let anthropicClient = null;
@@ -42,7 +42,14 @@ function getAnthropicClient() {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY is not set. Add it to your .env file and restart the server.');
   }
-  anthropicClient ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const defaultHeaders = {};
+  if (process.env.ANTHROPIC_WORKSPACE_ID) {
+    defaultHeaders['anthropic-workspace-id'] = process.env.ANTHROPIC_WORKSPACE_ID;
+  }
+  anthropicClient ??= new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    ...(Object.keys(defaultHeaders).length > 0 ? { defaultHeaders } : {}),
+  });
   return anthropicClient;
 }
 
@@ -77,19 +84,36 @@ async function runGeminiResearch(prompt) {
 }
 
 async function runAnthropicResearch(prompt) {
+  const maxTokens = Number.parseInt(process.env.ANTHROPIC_MAX_TOKENS || '8192', 10);
   const response = await getAnthropicClient().messages.create({
     model: ANTHROPIC_MODEL,
-    max_tokens: 4096,
+    max_tokens: maxTokens,
     messages: [{ role: 'user', content: prompt }],
   });
 
-  const content = (response.content ?? [])
-    .filter((block) => block.type === 'text')
-    .map((block) => block.text)
-    .join('\n\n')
-    .trim();
+  const textBlocks = (response.content ?? [])
+    .filter((block) => block.type === 'text' && typeof block.text === 'string')
+    .map((block) => block.text.trim())
+    .filter(Boolean);
 
-  if (!content) throw new Error('Claude returned an empty response.');
+  let content = textBlocks.join('\n\n').trim();
+
+  // Fallback: If no standard text block is present (e.g. if the response only returned thinking blocks or raw text)
+  if (!content && Array.isArray(response.content)) {
+    const fallbackBlocks = response.content
+      .map((block) => block.text || block.thinking || (typeof block === 'string' ? block : ''))
+      .map((t) => t.trim())
+      .filter(Boolean);
+    if (fallbackBlocks.length > 0) {
+      content = fallbackBlocks.join('\n\n').trim();
+    }
+  }
+
+  if (!content) {
+    const stopReason = response.stop_reason ? ` (stop reason: ${response.stop_reason})` : '';
+    const types = (response.content ?? []).map((b) => b.type || typeof b).join(', ') || 'empty';
+    throw new Error(`Claude returned an empty response${stopReason} [content types: ${types}].`);
+  }
 
   return { content, sources: [] };
 }

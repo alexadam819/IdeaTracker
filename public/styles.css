@@ -646,6 +646,48 @@ textarea {
   font-size: 0.875rem;
 }
 
+.research-feedback-container {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.research-feedback-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.research-feedback-hint {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.research-feedback-textarea {
+  width: 100%;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  resize: vertical;
+  min-height: 52px;
+}
+
+.research-feedback-textarea:focus {
+  background: var(--surface);
+  border-color: var(--primary);
+}
+
 /* ---------- Rendered Markdown ---------- */
 
 .markdown {

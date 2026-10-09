@@ -16,6 +16,10 @@ const app = express();
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(PUBLIC_DIR));
 
+app.get('/marketing', (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'marketing.html'));
+});
+
 app.get('/api/stages', (req, res) => {
   res.json(publicStages());
 });

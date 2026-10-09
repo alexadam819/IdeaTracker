@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IdeaTracker — Turn Napkin Ideas into Agent-Ready SaaS Specs for Claude Code</title>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="marketing.css">
+  <script type="module" src="marketing.js"></script>
+</head>
+<body class="marketing-page">
+
+  <!-- Top Navigation Bar -->
+  <nav class="m-nav" aria-label="Main Navigation">
+    <div class="m-nav-left">
+      <a href="/" class="m-logo">
+        <span>💡</span>
+        <span>IdeaTracker</span>
+      </a>
+      <span class="m-badge m-badge-claude">Detroit Claude Build Day</span>
+    </div>
+
+    <ul class="m-nav-links">
+      <li><a href="#pipeline">6-Stage Pipeline</a></li>
+      <li><a href="#claude-code">Claude Code Workflow</a></li>
+      <li><a href="#tracks">Hackathon Tracks</a></li>
+      <li><a href="#architecture">Stack Philosophy</a></li>
+    </ul>
+
+    <div class="m-nav-actions">
+      <button id="theme-toggle" class="btn btn-ghost btn-icon" type="button" aria-label="Toggle theme">
+        <span aria-hidden="true" class="theme-icon">🌙</span>
+      </button>
+      <button type="button" class="btn btn-ghost" data-open-pitch title="Open 2-Minute Demo Speaker Script (Key 'P')">
+        <span aria-hidden="true">🎤</span>
+        <span class="theme-label">Demo Script</span>
+      </button>
+      <a href="/" class="btn btn-primary">🚀 Launch Live Board</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="m-hero">
+    <div class="m-container m-hero-content">
+      <div class="m-event-pill">
+        <span>⚡</span>
+        <span>Built for Claude Code Builders & Indie Hackers</span>
+      </div>
+
+      <h1>
+        Turn Napkin Ideas into <br>
+        <span class="m-gradient-text">Agent-Ready SaaS Blueprints</span>
+      </h1>
+
+      <p class="m-hero-subtitle">
+        Before you type <code>claude</code> in an empty terminal, validate your architecture,
+        ground your market research in live web data, and chain context across 6 opinionated stages.
+      </p>
+
+      <div class="m-hero-ctas">
+        <a href="/" class="btn btn-primary m-btn-large">🚀 Open Live IdeaTracker Board</a>
+        <button type="button" class="btn btn-ghost m-btn-large" data-open-pitch>
+          🎤 Presenter Cheatsheet (2-Min Demo)
+        </button>
+      </div>
+
+      <div class="m-hero-stats">
+        <div class="m-stat-card">
+          <span class="m-stat-number">6</span>
+          <span class="m-stat-label">Chained Research Stages</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-stat-number">1-Click</span>
+          <span class="m-stat-label">Grounded Web Recon</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-stat-number">0%</span>
+          <span class="m-stat-label">Hallucinated Schemas</span>
+        </div>
+        <div class="m-stat-card">
+          <span class="m-stat-number">100%</span>
+          <span class="m-stat-label">Vanilla & Fast (0 Bloat)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Problem vs Solution Section -->
+    <section class="m-section" id="problem">
+      <div class="m-container">
+        <div class="m-section-header">
+          <span class="m-section-tag">The Builder's Dilemma</span>
+          <h2 class="m-section-title">The "Blank Terminal Syndrome" in Claude Code</h2>
+          <p class="m-section-desc">
+            Claude Code is the most capable coding agent in the world, but it relies on the quality of your prompt and architectural constraints.
+          </p>
+        </div>
+
+        <div class="m-compare-grid">
+          <div class="m-compare-card m-card-problem">
+            <h3 class="m-compare-title">
+              <span class="m-compare-icon">❌</span>
+              <span>Prompting Claude Code with One-Liners</span>
+            </h3>
+            <ul class="m-compare-list">
+              <li>
+                <span class="m-compare-icon">⚠️</span>
+                <span><strong>Unvalidated Tech Stacks:</strong> Agent defaults to generic choices that blow up monthly hosting or egress bills.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">⚠️</span>
+                <span><strong>Hallucinated Competitors:</strong> Building features that incumbents already do 10x better.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">⚠️</span>
+                <span><strong>Hazy Billing Models:</strong> Missing Stripe webhook event handling and broken tier gating logic.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">⚠️</span>
+                <span><strong>Context Drift:</strong> Burning thousands of tokens refactoring database schemas mid-build.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="m-compare-card m-card-solution">
+            <h3 class="m-compare-title">
+              <span class="m-compare-icon">✅</span>
+              <span>The IdeaTracker + Claude Code Flow</span>
+            </h3>
+            <ul class="m-compare-list">
+              <li>
+                <span class="m-compare-icon">✨</span>
+                <span><strong>Grounded Architecture Spec:</strong> Directory tree, Drizzle/Postgres models, and REST endpoints validated upfront.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">✨</span>
+                <span><strong>Live Market Reconnaissance:</strong> Real pricing matrix of direct competitors and unmet customer niches.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">✨</span>
+                <span><strong>Actionable Billing Spec:</strong> Concrete Stripe Connect / Payment Element requirements and webhook schemas.</span>
+              </li>
+              <li>
+                <span class="m-compare-icon">✨</span>
+                <span><strong>Chained Context:</strong> Every stage inherits validated insights from previous stages without data loss.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive 6-Stage Pipeline Explorer -->
+    <section class="m-section" id="pipeline" style="background: var(--surface-2);">
+      <div class="m-container">
+        <div class="m-section-header">
+          <span class="m-section-tag">Interactive Explorer</span>
+          <h2 class="m-section-title">The 6-Stage Research Pipeline</h2>
+          <p class="m-section-desc">
+            Click through each stage to see how a simple idea accumulates rich, agent-ready specifications step by step.
+          </p>
+        </div>
+
+        <div class="m-pipeline-card">
+          <!-- Stage Tabs -->
+          <div class="m-pipeline-tabs" role="tablist">
+            <button type="button" class="m-tab-btn active" data-stage="idea" role="tab">
+              <span class="m-tab-num">01</span>
+              <span>💡 Idea</span>
+            </button>
+            <button type="button" class="m-tab-btn" data-stage="tech-stack" role="tab">
+              <span class="m-tab-num">02</span>
+              <span>⚙️ Tech Stack</span>
+            </button>
+            <button type="button" class="m-tab-btn" data-stage="market" role="tab">
+              <span class="m-tab-num">03</span>
+              <span>🔍 Market</span>
+            </button>
+            <button type="button" class="m-tab-btn" data-stage="marketing" role="tab">
+              <span class="m-tab-num">04</span>
+              <span>📣 Marketing</span>
+            </button>
+            <button type="button" class="m-tab-btn" data-stage="monetization" role="tab">
+              <span class="m-tab-num">05</span>
+              <span>💳 Monetization</span>
+            </button>
+            <button type="button" class="m-tab-btn" data-stage="ready" role="tab">
+              <span class="m-tab-num">06</span>
+              <span>🚀 Ready to Build</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Tab Content -->
+          <div class="m-pipeline-content">
+            <div id="pipeline-info" class="m-pipeline-info">
+              <!-- Rendered via marketing.js -->
+            </div>
+
+            <div class="m-pipeline-preview">
+              <div class="m-preview-header">
+                <span id="pipeline-preview-title">Generated Specification Preview</span>
+                <span class="badge badge-low">Agent Spec</span>
+              </div>
+              <div id="pipeline-preview-body" class="m-preview-body markdown">
+                <!-- Rendered via marketing.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Claude Code Integration & Terminal Visualizer -->
+    <section class="m-section" id="claude-code">
+      <div class="m-container">
+        <div class="m-section-header">
+          <span class="m-section-tag">Seamless Handoff</span>
+          <h2 class="m-section-title">From IdeaTracker Directly Into <code>claude</code></h2>
+          <p class="m-section-desc">
+            When you reach Stage 6, copy the accumulated master blueprint and paste it directly into Claude Code.
+          </p>
+        </div>
+
+        <div class="m-terminal-box">
+          <div class="m-terminal-bar">
+            <div class="m-terminal-dots">
+              <span class="m-dot m-dot-red"></span>
+              <span class="m-dot m-dot-yellow"></span>
+              <span class="m-dot m-dot-green"></span>
+            </div>
+            <span class="m-terminal-title">claude code terminal — zsh</span>
+            <button type="button" class="btn btn-ghost btn-small" style="color: #8b949e;" data-copy-text="claude --print 'Building validated SaaS from IdeaTracker spec...'" data-copy-label="CLI command copied!">
+              📋 Copy Command
+            </button>
+          </div>
+
+          <div class="m-terminal-body">
+            <div><span class="m-term-prompt">$</span> <span class="m-term-cmd">claude</span></div>
+            <div style="margin-top: 0.5rem; color: #8b949e;">Welcome to Claude Code (Opus / Sonnet 3.7)</div>
+            <div style="margin-top: 0.5rem;"><span class="m-term-prompt">&gt;</span> <span class="m-term-claude">Here is our verified IdeaTracker master specification for Photography Client Sales SaaS. Build the Drizzle schema in lib/db/schema.ts and scaffold the Next.js routes.</span></div>
+            
+            <div class="m-term-box-inner">
+              <div class="m-term-success">● Reading specifications from chained research stages...</div>
+              <div>✔ Tech Stack: Next.js 15 App Router + Postgres + Cloudflare R2 + Stripe Connect</div>
+              <div>✔ Database Models: studios, galleries, photos, orders, entitlements</div>
+              <div>✔ MVP Feature Checklist (P0): Mobile-first gallery, SMS checkout, Web Share API</div>
+              <div>✔ Stripe Webhook Handlers: checkout.session.completed, account.updated</div>
+            </div>
+
+            <div style="margin-top: 0.5rem;"><span class="m-term-success">⚡ Claude Code:</span> Creating <code>lib/db/schema.ts</code>, generating migrations, and scaffolding API routes...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hackathon Track Alignment (Detroit Claude Build Day) -->
+    <section class="m-section" id="tracks" style="background: var(--surface-2);">
+      <div class="m-container">
+        <div class="m-section-header">
+          <span class="m-section-tag">Hackathon Ready</span>
+          <h2 class="m-section-title">Built for the 3 Claude Build Day Tracks</h2>
+          <p class="m-section-desc">
+            How IdeaTracker powers your project regardless of which track you tackle tonight.
+          </p>
+        </div>
+
+        <div class="m-tracks-grid">
+          <div class="m-track-card">
+            <span class="m-track-badge m-track-breakthrough">Track: Breakthrough</span>
+            <h4>Build What You Couldn't Before</h4>
+            <p>
+              Chain multi-stage AI reasoning with live Google Search grounding so you can architect complex SaaS platforms (Stripe Connect, multi-tenant schemas, S3/R2 storage) in minutes.
+            </p>
+          </div>
+
+          <div class="m-track-card">
+            <span class="m-track-badge m-track-delight">Track: Delight</span>
+            <h4>Frictionless, Beautiful Workflow</h4>
+            <p>
+              Experience an instantaneous zero-lag Kanban board with smooth HTML5 drag-and-drop, collapsible research panels, live Markdown previews, and instant theme toggling.
+            </p>
+          </div>
+
+          <div class="m-track-card">
+            <span class="m-track-badge m-track-everyday">Track: Everyday</span>
+            <h4>Solve Real Builder Pains</h4>
+            <p>
+              Stop burning time and tokens on half-baked ideas. Get straight to building validated, profitable software that real users will pay for.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture & Developer Highlights -->
+    <section class="m-section" id="architecture">
+      <div class="m-container">
+        <div class="m-section-header">
+          <span class="m-section-tag">Zero Bloat</span>
+          <h2 class="m-section-title">Why Developers Love the Tech Stack</h2>
+          <p class="m-section-desc">
+            Built following the philosophy of minimal dependencies, instant responsiveness, and extreme maintainability.
+          </p>
+        </div>
+
+        <div class="m-features-grid">
+          <div class="m-feature-card">
+            <span class="m-feature-icon">⚡</span>
+            <h4>Vanilla Frontend (0 Build Steps)</h4>
+            <p>Pure HTML5, CSS custom properties, and native ES modules. No Webpack, no Vite, no React hydration overhead. Boots instantly.</p>
+          </div>
+
+          <div class="m-feature-card">
+            <span class="m-feature-icon">📁</span>
+            <h4>Atomic Local JSON Database</h4>
+            <p>All data lives in <code>data/db.json</code> with serialized promise-queue writes and atomic file renaming. Zero external database setup needed.</p>
+          </div>
+
+          <div class="m-feature-card">
+            <span class="m-feature-icon">🧠</span>
+            <h4>Dual LLM Engine Support</h4>
+            <p>Seamlessly works with Google Gemini 2.5 (with live Google Search grounding) or Anthropic Claude 3.5/3.7 Sonnet based on your <code>.env</code> key.</p>
+          </div>
+
+          <div class="m-feature-card">
+            <span class="m-feature-icon">✍️</span>
+            <h4>Stage-Specific Feedback Steer</h4>
+            <p>Add custom constraints to any stage (e.g. <em>"Must use SQLite instead of Postgres"</em>) and re-run research on the fly.</p>
+          </div>
+
+          <div class="m-feature-card">
+            <span class="m-feature-icon">🔒</span>
+            <h4>100% Private & Server-Side</h4>
+            <p>API keys never reach the browser. All research runs server-side with strict HTML escaping before rendering.</p>
+          </div>
+
+          <div class="m-feature-card">
+            <span class="m-feature-icon">🌗</span>
+            <h4>First-Class Dark & Light Mode</h4>
+            <p>Respects your OS preferences with instant switching, persisted in <code>localStorage</code>, with zero flash of unstyled theme.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Presenter Mode Floating Trigger -->
+  <button type="button" class="m-presenter-pill" data-open-pitch title="Open 2-Minute Demo Speaker Script">
+    <span>🎤</span>
+    <span>Presenter Pitch Mode</span>
+    <span class="m-key-hint">Press P</span>
+  </button>
+
+  <!-- Presenter 2-Minute Demo Script Modal -->
+  <dialog id="pitch-dialog" class="m-pitch-modal" aria-labelledby="pitch-title">
+    <div class="m-pitch-header">
+      <div>
+        <h3 id="pitch-title" style="margin: 0; font-size: 1.15rem;">🎤 2-Minute Claude Meetup Demo Script</h3>
+        <small style="color: var(--muted);">Detroit Claude Build Day Presentation Cheatsheet</small>
+      </div>
+      <button type="button" class="btn btn-ghost btn-icon" data-close-pitch aria-label="Close">✕</button>
+    </div>
+
+    <div class="m-pitch-body">
+      <div class="m-pitch-timer-bar">
+        <div>
+          <span style="font-size: 0.85rem; font-weight: 600; margin-right: 0.5rem;">Pacing Guide:</span>
+          <span id="pitch-timer-display" style="font-family: ui-monospace, monospace; font-weight: 700;">00:00 / 02:00</span>
+        </div>
+        <div style="display: flex; gap: 0.4rem;">
+          <button id="pitch-timer-toggle" type="button" class="btn btn-ghost btn-small">▶ Start Timer</button>
+          <button id="pitch-timer-reset" type="button" class="btn btn-ghost btn-small">↺ Reset</button>
+        </div>
+      </div>
+
+      <div class="m-pitch-steps">
+        <div class="m-pitch-step">
+          <div class="m-pitch-step-time">0:00 - 0:30 • The Hook & The Problem</div>
+          <h4>"We've all suffered from Blank Terminal Syndrome"</h4>
+          <p>
+            You fire up Claude Code, type a quick prompt like <em>"Build me an event planner SaaS"</em>, and 20 minutes later you're stuck debugging weird database relationships or expensive hosting architectures.
+          </p>
+          <div class="m-pitch-cue">
+            💡 <strong>Presenter Cue:</strong> Show the IdeaTracker Kanban board. Explain that IdeaTracker is the structured bridge between a raw idea and Claude Code execution.
+          </div>
+        </div>
+
+        <div class="m-pitch-step">
+          <div class="m-pitch-step-time">0:30 - 1:10 • The 6-Stage Context Chaining Flow</div>
+          <h4>"Every stage builds on the previous one"</h4>
+          <p>
+            Show how an idea moves from <strong>Idea</strong> ➔ <strong>Tech Stack</strong> (comparing 3 stacks, outputting Drizzle schema & API routes) ➔ <strong>Market & Competitors</strong> (real competitor pricing & gaps) ➔ <strong>Marketing</strong> ➔ <strong>Monetization</strong> (Stripe billing spec).
+          </p>
+          <div class="m-pitch-cue">
+            💡 <strong>Presenter Cue:</strong> Click into an existing card (e.g., Photography Studio or Meetup Planner) and expand the Tech Stack or Market research tabs.
+          </div>
+        </div>
+
+        <div class="m-pitch-step">
+          <div class="m-pitch-step-time">1:10 - 1:40 • Live Grounded Intelligence & Custom Feedback</div>
+          <h4>"Real web grounding & human-in-the-loop steering"</h4>
+          <p>
+            Explain that Gemini / Claude uses live search grounding for competitor pricing and stack benchmarks. Show the feedback box where you can steer the AI with custom requirements.
+          </p>
+          <div class="m-pitch-cue">
+            💡 <strong>Presenter Cue:</strong> Highlight the stage feedback input and click "Run Research" or show the rendered sources and markdown tables.
+          </div>
+        </div>
+
+        <div class="m-pitch-step">
+          <div class="m-pitch-step-time">1:40 - 2:00 • The Claude Code Handoff & Wrap-Up</div>
+          <h4>"One click to launch in Claude Code"</h4>
+          <p>
+            Show the <strong>Ready to Build</strong> stage where all context is aggregated into a master specification ready to feed into Claude Code to start scaffolding the codebase.
+          </p>
+          <div class="m-pitch-cue">
+            💡 <strong>Presenter Cue:</strong> Click "Launch Live Board" and invite everyone to try it for their hackathon projects!
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.6rem;">
+        <button type="button" class="btn btn-ghost" data-close-pitch>Close</button>
+        <a href="/" class="btn btn-primary">🚀 Jump to Live Board</a>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
+  <footer class="m-footer">
+    <div class="m-container m-footer-content">
+      <div>
+        <strong>💡 IdeaTracker</strong> — Built for the Detroit Claude Community & AI Builders.
+      </div>
+      <div>
+        <a href="/" class="btn btn-ghost btn-small">Open Board</a>
+        <a href="#pipeline" class="btn btn-ghost btn-small">Pipeline Spec</a>
+        <a href="https://luma.com/claude-fplq" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-small">Meetup Event ↗</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

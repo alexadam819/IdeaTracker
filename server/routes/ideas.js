@@ -161,6 +161,17 @@ router.patch('/:id', async (req, res) => {
     if (stage !== undefined || order !== undefined) {
       placeIdea(data, found, stage ?? found.stage, order);
     }
+    if (body.research && typeof body.research === 'object') {
+      found.research ??= {};
+      for (const [sId, sData] of Object.entries(body.research)) {
+        if (STAGE_IDS.includes(sId) && sData && typeof sData === 'object') {
+          found.research[sId] ??= { status: 'idle', content: '', sources: [], error: null };
+          if (typeof sData.feedback === 'string') {
+            found.research[sId].feedback = cleanString(sData.feedback, 'feedback', LIMITS.notes);
+          }
+        }
+      }
+    }
     found.updatedAt = new Date().toISOString();
     return found;
   });
@@ -176,32 +187,42 @@ router.delete('/:id', async (req, res) => {
   res.status(204).end();
 });
 
-// Starts research for the card's current stage. Responds right away with 202 and the card
+// Starts research for the card's current stage (or specified stage). Responds right away with 202 and the card
 // (stage status "running"); the Gemini call continues in the background and saves its result.
 router.post('/:id/research', async (req, res) => {
   if (!isConfigured()) {
     throw new HttpError(503, 'No LLM API key configured. Add GEMINI_API_KEY or ANTHROPIC_API_KEY to your .env file and restart the server.');
   }
 
+  const requestedStage = req.body?.stage !== undefined ? cleanStage(req.body.stage) : undefined;
+  const feedbackInput = typeof req.body?.feedback === 'string' ? req.body.feedback : undefined;
+
   const { idea, stageId, prompt } = await db.update((data) => {
     const found = findIdea(data, req.params.id);
-    if (!isResearchStage(found.stage)) {
+    const targetStage = requestedStage ?? found.stage;
+    if (!isResearchStage(targetStage)) {
       throw new HttpError(400, 'This stage has no research step');
     }
-    const previous = found.research?.[found.stage];
+    const previous = found.research?.[targetStage];
     if (previous?.status === 'running') {
       throw new HttpError(409, 'Research is already running for this stage');
     }
-    const builtPrompt = buildPrompt(found, found.stage);
+
     found.research ??= {};
-    found.research[found.stage] = {
+    const feedback = feedbackInput !== undefined
+      ? cleanString(feedbackInput, 'feedback', LIMITS.notes)
+      : (previous?.feedback ?? '');
+
+    found.research[targetStage] = {
       status: 'running',
       content: previous?.content ?? '',
       sources: previous?.sources ?? [],
+      feedback,
       error: null,
       updatedAt: new Date().toISOString(),
     };
-    return { idea: structuredClone(found), stageId: found.stage, prompt: builtPrompt };
+    const builtPrompt = buildPrompt(found, targetStage, feedback);
+    return { idea: structuredClone(found), stageId: targetStage, prompt: builtPrompt };
   });
 
   res.status(202).json(idea);

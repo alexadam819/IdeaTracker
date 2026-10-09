@@ -20,6 +20,7 @@ const state = {
   editingId: null,
   detailId: null,
   detailSnapshot: '',
+  feedbackDrafts: {},
   dragId: null,
   pollTimer: null,
 };
@@ -174,8 +175,9 @@ function statusIcons(idea) {
   );
 }
 
-function researchButton(idea, { compact = false } = {}) {
-  const stage = state.stages.find((s) => s.id === idea.stage);
+function researchButton(idea, { compact = false, stageId = null, getFeedback = null } = {}) {
+  const targetStageId = stageId || idea.stage;
+  const stage = state.stages.find((s) => s.id === targetStageId);
   if (!stage?.hasResearch) return null;
   const status = statusOf(idea, stage.id);
   const running = status === 'running';
@@ -188,7 +190,8 @@ function researchButton(idea, { compact = false } = {}) {
     'aria-label': `${label} for ${stage.title} on “${idea.title}”`,
     onclick: (event) => {
       event.stopPropagation();
-      runResearch(idea.id);
+      const feedback = typeof getFeedback === 'function' ? getFeedback() : undefined;
+      runResearch(idea.id, targetStageId, feedback);
     },
   }, running ? el('span', { class: 'spinner', 'aria-hidden': 'true' }) : null, label);
 }
@@ -226,6 +229,42 @@ function openDetail(id) {
   if (!dialog.open) dialog.showModal();
 }
 
+async function copyAgentPrompt(idea) {
+  const parts = [
+    `# Agent Build Specification: ${idea.title}`,
+    '',
+    idea.description ? `## Product Overview\n${idea.description}` : '',
+    idea.targetAudience ? `**Target Audience:** ${idea.targetAudience}` : '',
+    idea.tags?.length ? `**Tags:** ${idea.tags.join(', ')}` : '',
+    idea.notes ? `**Notes:** ${idea.notes}` : '',
+  ].filter(Boolean);
+
+  const completedStages = researchStages().filter((s) => idea.research?.[s.id]?.status === 'done' && idea.research[s.id].content);
+  if (completedStages.length > 0) {
+    parts.push('# Technical & Product Specifications\n');
+    for (const stage of completedStages) {
+      parts.push(`## ${stage.title}\n\n${idea.research[stage.id].content}`);
+    }
+  }
+
+  const promptText = parts.join('\n\n').trim();
+  try {
+    await navigator.clipboard.writeText(promptText);
+    toast('Copied full build specification to clipboard!');
+  } catch (err) {
+    toast('Could not copy to clipboard.');
+  }
+}
+
+async function copyStageContent(stageTitle, content) {
+  try {
+    await navigator.clipboard.writeText(`## ${stageTitle}\n\n${content}`);
+    toast(`Copied ${stageTitle} spec to clipboard!`);
+  } catch (err) {
+    toast('Could not copy to clipboard.');
+  }
+}
+
 function renderDetail() {
   const idea = state.ideas.find((i) => i.id === state.detailId);
   const dialog = $('#detail-dialog');
@@ -256,6 +295,12 @@ function renderDetail() {
     el('label', { for: 'detail-stage' }, 'Stage'),
     stageSelect,
     el('span', { class: 'spacer' }),
+    el('button', {
+      type: 'button',
+      class: 'btn',
+      title: 'Copy all idea details and research as a ready-to-build specification for an AI agent',
+      onclick: () => copyAgentPrompt(idea),
+    }, '📋 Copy for Agent'),
     el('button', { type: 'button', class: 'btn', onclick: () => openEdit(idea.id) }, 'Edit'),
     el('button', { type: 'button', class: 'btn btn-danger', onclick: () => deleteIdea(idea.id) }, 'Delete'),
   );
@@ -304,10 +349,45 @@ function renderDetail() {
       content.push(el('p', { class: 'muted' }, 'No research yet.'));
     }
 
+    const feedbackKey = `${idea.id}:${stage.id}`;
+    const currentFeedback = state.feedbackDrafts[feedbackKey] ?? result?.feedback ?? '';
+
+    const feedbackTextarea = el('textarea', {
+      id: `feedback-${stage.id}`,
+      class: 'research-feedback-textarea',
+      placeholder: 'Add instructions, constraints, or focus areas before running/re-running research...',
+      rows: 2,
+      oninput: (e) => {
+        state.feedbackDrafts[feedbackKey] = e.target.value;
+      },
+      onchange: (e) => {
+        state.feedbackDrafts[feedbackKey] = e.target.value;
+        saveFeedback(idea.id, stage.id, e.target.value);
+      },
+    }, currentFeedback);
+
+    const feedbackBox = el('div', { class: 'research-feedback-container' },
+      el('label', { for: `feedback-${stage.id}`, class: 'research-feedback-label' },
+        el('span', {}, 'Research feedback & guidance'),
+        el('span', { class: 'research-feedback-hint' }, '(passed to AI when running/re-running research)'),
+      ),
+      feedbackTextarea,
+    );
+
+    const hasContent = Boolean(result?.content && status === 'done');
     const footer = el('div', { class: 'research-footer' },
       result?.updatedAt && status !== 'running' ? el('span', { class: 'muted' }, `Updated ${formatDate(result.updatedAt)}`) : null,
       el('span', { class: 'spacer' }),
-      isCurrent ? researchButton(idea) : el('span', { class: 'muted' }, 'Move the card to this stage to run research.'),
+      hasContent ? el('button', {
+        type: 'button',
+        class: 'btn btn-small',
+        title: 'Copy this section as Markdown for your AI agent',
+        onclick: () => copyStageContent(stage.title, result.content),
+      }, 'Copy section') : null,
+      isCurrent ? researchButton(idea, {
+        stageId: stage.id,
+        getFeedback: () => feedbackTextarea.value,
+      }) : el('span', { class: 'muted' }, 'Move the card to this stage to run research.'),
     );
 
     return el('details', { class: 'research', dataset: { stage: stage.id }, open },
@@ -316,12 +396,27 @@ function renderDetail() {
         el('span', { class: `status-pill status-${status}` },
           el('span', { 'aria-hidden': 'true' }, STATUS[status].icon), ' ', STATUS[status].label),
       ),
-      el('div', { class: 'research-body' }, content, footer),
+      el('div', { class: 'research-body' }, content, feedbackBox, footer),
     );
   });
 
+  const activeEl = document.activeElement;
+  const activeId = activeEl?.id;
+  const selectionStart = activeEl?.selectionStart;
+  const selectionEnd = activeEl?.selectionEnd;
+
   body.replaceChildren(actions, fields, el('h3', { class: 'section-title' }, 'Research'), ...sections);
   if (!firstRender) body.scrollTop = scrollTop;
+
+  if (activeId && document.getElementById(activeId)) {
+    const restoredEl = document.getElementById(activeId);
+    restoredEl.focus();
+    if (typeof selectionStart === 'number' && typeof selectionEnd === 'number') {
+      try {
+        restoredEl.setSelectionRange(selectionStart, selectionEnd);
+      } catch {}
+    }
+  }
 }
 
 // ---------- Create / edit modal ----------
@@ -376,6 +471,18 @@ async function saveEdit(event) {
 
 // ---------- Actions ----------
 
+async function saveFeedback(ideaId, stageId, feedback) {
+  try {
+    const updated = await api(`/ideas/${ideaId}`, {
+      method: 'PATCH',
+      body: { research: { [stageId]: { feedback } } },
+    });
+    replaceIdea(updated);
+  } catch (err) {
+    console.error('Failed to save feedback:', err);
+  }
+}
+
 async function moveIdea(id, stage, order) {
   // Optimistic update so the card moves immediately.
   const idea = state.ideas.find((i) => i.id === id);
@@ -410,9 +517,15 @@ async function deleteIdea(id) {
   }
 }
 
-async function runResearch(id) {
+async function runResearch(id, stageId, feedback) {
   try {
-    replaceIdea(await api(`/ideas/${id}/research`, { method: 'POST' }));
+    const body = {};
+    if (stageId) body.stage = stageId;
+    if (feedback !== undefined) body.feedback = feedback;
+    replaceIdea(await api(`/ideas/${id}/research`, {
+      method: 'POST',
+      body: Object.keys(body).length ? body : undefined,
+    }));
     render();
   } catch (err) {
     toast(`Could not start research: ${err.message}`);
